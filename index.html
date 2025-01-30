@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Получить карточку VOCO</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            flex-direction: column; /* Для кнопки снизу */
+        }
+        .card img {
+            border-radius: 5px;
+            max-width: 120px;
+            margin-bottom: 20px; /* Увеличение расстояния между изображением и текстом */
+        }
+        .card-content {
+            text-align: center; /* Центровка текста */
+            line-height: 1.6;
+        }
+        .card-content h2, .card-content p {
+            margin: 0;
+        }
+        .card-verified {
+            font-size: 12px;
+            color: #00ff00;
+            margin-top: 10px;
+        }
+        .card-number {
+            font-size: 12px;
+            color: #777;
+            margin-top: 10px;
+        }
+        .form input {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            width: 100%;
+        }
+        .profile-button, .copy-button {
+            margin-top: 20px; /* Отступ сверху */
+            padding: 10px 20px;
+            border: none;
+            background-color: #00ff00;
+            color: #000;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .link-container {
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+        .link-container a {
+            color: #00ff00;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="form">
+        <input type="text" id="name" placeholder="Введите имя">
+        <input type="text" id="username" placeholder="@username">
+        <input type="file" id="photo">
+        <button onclick="generateCard()">Получить карточку VOCO</button>
+    </div>
+    <div id="card" class="card" style="display:none;">
+        <img id="card-photo" src="" alt="Фото">
+        <div class="card-content">
+            <h2 id="card-name"></h2>
+            <p id="card-username"></p>
+            <p class="card-verified">Verified by VOCO</p>
+            <p class="card-number"></p>
+        </div>
+        <button class="profile-button" onclick="showLink()">Добавить в профиль</button>
+    </div>
+    <div class="link-container" id="link-container">
+        <p></p>
+        <a id="card-link" href="#" target="_blank"></a>
+        <button class="copy-button" onclick="copyLink()">Копировать ссылку</button>
+    </div>
+    <script>
+        function saveData(name, username, photoSrc, uniqueNumber) {
+            const cardData = { name, username, photoSrc, uniqueNumber };
+            localStorage.setItem('cardData', JSON.stringify(cardData));
+        }
+
+        function loadData() {
+            const cardData = JSON.parse(localStorage.getItem('cardData'));
+            if (cardData) {
+                document.getElementById('card-name').textContent = cardData.name;
+                document.getElementById('card-username').textContent = '@' + cardData.username;
+                document.getElementById('card-photo').src = cardData.photoSrc;
+                document.querySelector('.card-number').textContent = cardData.uniqueNumber;
+                document.querySelector('.form').style.display = 'none';
+                document.getElementById('card').style.display = 'flex';
+                document.querySelector('.profile-button').style.display = 'block';
+            }
+        }
+
+        function generateCard() {
+            const name = document.getElementById('name').value;
+            const username = document.getElementById('username').value;
+            const photo = document.getElementById('photo').files[0];
+            const uniqueNumber = '№ ' + Math.floor(Math.random() * 1000000);
+
+            if (name && username && photo) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const photoSrc = event.target.result;
+                    document.getElementById('card-photo').src = photoSrc;
+                    document.getElementById('card-name').textContent = name;
+                    document.getElementById('card-username').textContent = '@' + username;
+                    document.querySelector('.card-number').textContent = uniqueNumber;
+
+                    saveData(name, username, photoSrc, uniqueNumber);
+
+                    document.querySelector('.form').style.display = 'none';
+                    document.getElementById('card').style.display = 'flex';
+                    document.querySelector('.profile-button').style.display = 'block';
+                };
+                reader.readAsDataURL(photo);
+            } else {
+                alert('Пожалуйста, заполните все поля и загрузите фото.');
+            }
+        }
+
+        function showLink() {
+            const cardData = JSON.parse(localStorage.getItem('cardData'));
+            if (cardData) {
+                const cardLink = 'data:text/html;charset=utf-8,' + encodeURIComponent(`
+                    <html>
+                    <body style="background-color:#000;color:#fff;font-family:Arial,sans-serif;text-align:center;padding:20px;">
+                        <div style="background-color:#1e1e1e;padding:30px;border-radius:10px;max-width:500px;margin:auto;">
+                            <img src="${cardData.photoSrc}" style="border-radius:5px;max-width:120px;margin-bottom:20px;">
+                            <h2>${cardData.name}</h2>
+                            <p>@${cardData.username}</p>
+                            <p style="color:#00ff00;">Verified by VOCO</p>
+                            <p style="color:#777;">${cardData.uniqueNumber}</p>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                document.getElementById('card-link').href = cardLink;
+                document.getElementById('card-link').textContent = '';
+                document.getElementById('link-container').style.display = 'block';
+            }
+        }
+
+        function copyLink() {
+            const cardLinkElement = document.getElementById('card-link');
+            const link = cardLinkElement.href;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Ссылка скопирована в буфер обмена!');
+            });
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
