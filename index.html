@@ -18,6 +18,35 @@
             padding: 10px;
             box-sizing: border-box;
         }
+        .form {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form input[type="text"], .form input[type="file"] {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            width: 100%;
+            font-size: 16px;
+        }
+        .form button {
+            margin-top: 20px; /* Отступ сверху */
+            padding: 10px 20px;
+            border: none;
+            background-color: #00ff00;
+            color: #000;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
         .card {
             background-color: #1e1e1e;
             padding: 30px;
@@ -27,6 +56,7 @@
             display: flex;
             align-items: center;
             flex-direction: column; /* Для кнопки снизу */
+            margin-top: 20px; /* Отступ сверху */
         }
         .card img {
             border-radius: 5px;
@@ -50,17 +80,11 @@
             color: #777;
             margin-top: 10px;
         }
-        .form input {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
     <div class="form">
+        <h2>Получить карточку VOCO</h2>
         <input type="text" id="name" placeholder="Введите имя">
         <input type="text" id="username" placeholder="@username">
         <input type="file" id="photo">
