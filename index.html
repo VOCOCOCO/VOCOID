@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> <!-- Отключение зумирования -->
     <title>Получить карточку VOCO</title>
     <style>
         body {
@@ -15,6 +15,8 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
         }
         .card {
             background-color: #1e1e1e;
@@ -55,24 +57,6 @@
             border: none;
             width: 100%;
         }
-        .profile-button, .copy-button {
-            margin-top: 20px; /* Отступ сверху */
-            padding: 10px 20px;
-            border: none;
-            background-color: #00ff00;
-            color: #000;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .link-container {
-            margin-top: 20px;
-            display: none;
-            text-align: center;
-        }
-        .link-container a {
-            color: #00ff00;
-            text-decoration: none;
-        }
     </style>
 </head>
 <body>
@@ -90,12 +74,6 @@
             <p class="card-verified">Verified by VOCO</p>
             <p class="card-number"></p>
         </div>
-        <button class="profile-button" onclick="showLink()">Добавить в профиль</button>
-    </div>
-    <div class="link-container" id="link-container">
-        <p></p>
-        <a id="card-link" href="#" target="_blank"></a>
-        <button class="copy-button" onclick="copyLink()">Копировать ссылку</button>
     </div>
     <script>
         function saveData(name, username, photoSrc, uniqueNumber) {
@@ -112,7 +90,6 @@
                 document.querySelector('.card-number').textContent = cardData.uniqueNumber;
                 document.querySelector('.form').style.display = 'none';
                 document.getElementById('card').style.display = 'flex';
-                document.querySelector('.profile-button').style.display = 'block';
             }
         }
 
@@ -135,42 +112,11 @@
 
                     document.querySelector('.form').style.display = 'none';
                     document.getElementById('card').style.display = 'flex';
-                    document.querySelector('.profile-button').style.display = 'block';
                 };
                 reader.readAsDataURL(photo);
             } else {
                 alert('Пожалуйста, заполните все поля и загрузите фото.');
             }
-        }
-
-        function showLink() {
-            const cardData = JSON.parse(localStorage.getItem('cardData'));
-            if (cardData) {
-                const cardLink = 'data:text/html;charset=utf-8,' + encodeURIComponent(`
-                    <html>
-                    <body style="background-color:#000;color:#fff;font-family:Arial,sans-serif;text-align:center;padding:20px;">
-                        <div style="background-color:#1e1e1e;padding:30px;border-radius:10px;max-width:500px;margin:auto;">
-                            <img src="${cardData.photoSrc}" style="border-radius:5px;max-width:120px;margin-bottom:20px;">
-                            <h2>${cardData.name}</h2>
-                            <p>@${cardData.username}</p>
-                            <p style="color:#00ff00;">Verified by VOCO</p>
-                            <p style="color:#777;">${cardData.uniqueNumber}</p>
-                        </div>
-                    </body>
-                    </html>
-                `);
-                document.getElementById('card-link').href = cardLink;
-                document.getElementById('card-link').textContent = '';
-                document.getElementById('link-container').style.display = 'block';
-            }
-        }
-
-        function copyLink() {
-            const cardLinkElement = document.getElementById('card-link');
-            const link = cardLinkElement.href;
-            navigator.clipboard.writeText(link).then(() => {
-                alert('Ссылка скопирована в буфер обмена!');
-            });
         }
 
         window.onload = loadData;
